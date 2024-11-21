@@ -27,17 +27,11 @@ func BenchmarkDuckDBWithMySQL(mysqlDSN string, query string) {
 		log.Fatalf("Failed to load MySQL extension in DuckDB: %v", err)
 	}
 
-	// Configura a conexão MySQL no DuckDB
-	createMysqlConnection := fmt.Sprintf("SET mysql_dsn='%s';", mysqlDSN)
-	_, err = conn.Exec(createMysqlConnection)
+	// Executa a consulta no MySQL diretamente usando mysql_scan
+	queryWithMySQL := fmt.Sprintf("SELECT * FROM mysql_scan('%s')", mysqlDSN)
+	rows, err := conn.Query(queryWithMySQL)
 	if err != nil {
-		log.Fatalf("Failed to set MySQL DSN in DuckDB: %v", err)
-	}
-
-	// Executa a query no DuckDB
-	rows, err := conn.Query(query)
-	if err != nil {
-		log.Fatalf("DuckDB query failed: %v", err)
+		log.Fatalf("Failed to execute query in DuckDB: %v", err)
 	}
 	defer rows.Close()
 
