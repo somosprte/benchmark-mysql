@@ -1,0 +1,37 @@
+# Diretórios gerados pela build
+bin/
+build/
+out/
+
+# Módulos e cache do Go
+go.sum
+*.mod
+*.out
+*.exe
+*.test
+*.log
+
+# Arquivos temporários do sistema operacional
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Arquivos relacionados ao editor/IDE
+.vscode/
+.idea/
+*.iml
+
+# Ferramentas de debug/teste
+*.prof
+*.cov
+
+# Arquivos temporários e logs
+*.tmp
+*.bak
+*.old
+*.log
+
+# Configurações locais e sensíveis
+.env
+config.local.json
