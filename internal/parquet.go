@@ -111,7 +111,7 @@ func createDynamicStruct(columns []string) interface{} {
 		fields = append(fields, reflect.StructField{
 			Name: fieldName,          // Nome do campo (Go exige que comece com letra maiúscula)
 			Type: reflect.TypeOf(""), // Tipo de dado (UTF8 = string)
-			Tag:  reflect.StructTag(fmt.Sprintf(`parquet:"name=%s, type=UTF8"`, col)),
+			Tag:  reflect.StructTag(fmt.Sprintf(`parquet:"name=%s, type=BYTE_ARRAY, convertedtype=UTF8"`, col)),
 		})
 	}
 
