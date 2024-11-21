@@ -24,7 +24,7 @@ This application benchmarks MySQL query performance using **DuckDB** and **Parqu
 
 ### Prerequisites
 
-1. Install **Go** (v1.20 or higher): [Download here](https://go.dev/dl/).
+1. Install **Go** (v1.23.3 or higher): [Download here](https://go.dev/dl/).
 2. Install **DuckDB** (optional for external verification): [Download here](https://duckdb.org/).
 3. Have access to a MySQL database.
 
