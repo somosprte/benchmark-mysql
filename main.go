@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/somosprte/benchmark-mysql/internal"
 )
