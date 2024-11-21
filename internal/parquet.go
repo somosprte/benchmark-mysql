@@ -100,12 +100,16 @@ func WriteParquet(data [][]string, columns []string, parquetFilePath string) {
 	fmt.Printf("Parquet file written successfully: %s\n", parquetFilePath)
 }
 
+// createDynamicStruct cria dinamicamente uma estrutura Go para o esquema Parquet
 func createDynamicStruct(columns []string) interface{} {
-	// Cria campos dinamicamente com tags Parquet
+	// Converte os nomes das colunas para campos exportados
 	fields := []reflect.StructField{}
 	for _, col := range columns {
+		// Transforma o nome da coluna em um nome de campo exportado
+		fieldName := toExportedFieldName(col)
+
 		fields = append(fields, reflect.StructField{
-			Name: col,                // Nome do campo (em Go, precisa ser único e começar com letra maiúscula)
+			Name: fieldName,          // Nome do campo (Go exige que comece com letra maiúscula)
 			Type: reflect.TypeOf(""), // Tipo de dado (UTF8 = string)
 			Tag:  reflect.StructTag(fmt.Sprintf(`parquet:"name=%s, type=UTF8"`, col)),
 		})
