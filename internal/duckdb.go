@@ -4,9 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
-	"strings"
+	"regexp"
 	"time"
 
 	_ "github.com/marcboeker/go-duckdb"
@@ -105,27 +104,28 @@ func BenchmarkDuckDBWithParquet(parquetFilePath string, query string) {
 
 // convertMySQLDSNToDuckDB converte uma string DSN do MySQL para o formato usado pelo DuckDB
 func convertMySQLDSNToDuckDB(mysqlDSN string) (string, error) {
-	// Analisa o DSN do MySQL
-	if !strings.HasPrefix(mysqlDSN, "mysql://") {
-		mysqlDSN = "mysql://" + mysqlDSN
+	// Regex para extrair informações do DSN
+	re := regexp.MustCompile(`(?P<User>[^:]+):(?P<Password>[^@]+)@tcp\((?P<Host>[^:]+):(?P<Port>[0-9]+)\)/(?P<Database>[^?]+)`)
+
+	// Match do regex no DSN fornecido
+	match := re.FindStringSubmatch(mysqlDSN)
+	if match == nil {
+		return "", fmt.Errorf("invalid MySQL DSN format")
 	}
 
-	parsedDSN, err := url.Parse(mysqlDSN)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse MySQL DSN: %v", err)
+	// Extrai os valores usando os nomes dos grupos
+	params := make(map[string]string)
+	for i, name := range re.SubexpNames() {
+		if i > 0 && i <= len(match) {
+			params[name] = match[i]
+		}
 	}
 
-	// Extrai componentes
-	user := parsedDSN.User.Username()
-	password, _ := parsedDSN.User.Password()
-	host := parsedDSN.Hostname()
-	port := parsedDSN.Port()
-	if port == "" {
-		port = "3306" // Porta padrão do MySQL
-	}
-	database := strings.TrimPrefix(parsedDSN.Path, "/")
+	// Constrói o DSN para DuckDB
+	duckdbDSN := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s database=%s",
+		params["Host"], params["Port"], params["User"], params["Password"], params["Database"],
+	)
 
-	// Constrói o DSN para o DuckDB
-	duckdbDSN := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s", host, port, user, password, database)
 	return duckdbDSN, nil
 }
