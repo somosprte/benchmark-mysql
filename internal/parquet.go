@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 
 	"github.com/xitongsys/parquet-go/source"
 	"github.com/xitongsys/parquet-go/writer"
@@ -56,10 +57,10 @@ func (fw *FileWriter) Open(name string) (source.ParquetFile, error) {
 // LocalFileWriter marca que este é um escritor de arquivo local
 func (fw *FileWriter) LocalFileWriter() {}
 
-// WriteParquet escreve os dados em um arquivo Parquet
+// / WriteParquet escreve os dados em um arquivo Parquet usando um esquema dinâmico
 func WriteParquet(data [][]string, columns []string, parquetFilePath string) {
-	// Cria o esquema dinâmico com base nas colunas
-	type Record map[string]string
+	// Cria a estrutura dinâmica
+	dynamicStruct := createDynamicStruct(columns)
 
 	// Cria um FileWriter para escrita em Parquet
 	fw, err := NewFileWriter(parquetFilePath)
@@ -68,8 +69,8 @@ func WriteParquet(data [][]string, columns []string, parquetFilePath string) {
 	}
 	defer fw.Close()
 
-	// Configura o escritor Parquet com o esquema dinâmico
-	pw, err := writer.NewParquetWriter(fw, new(Record), 4)
+	// Configura o escritor Parquet
+	pw, err := writer.NewParquetWriter(fw, dynamicStruct, 4)
 	if err != nil {
 		log.Fatalf("Failed to initialize Parquet writer: %v", err)
 	}
@@ -77,15 +78,38 @@ func WriteParquet(data [][]string, columns []string, parquetFilePath string) {
 
 	// Escreve os dados no Parquet
 	for _, record := range data {
-		row := make(Record)
+		// Preenche a estrutura dinâmica
+		row := reflect.ValueOf(dynamicStruct).Elem()
 		for i, col := range columns {
-			row[col] = record[i]
+			if i < len(record) {
+				field := row.FieldByName(col)
+				if field.IsValid() {
+					field.SetString(record[i])
+				}
+			}
 		}
 
-		if err := pw.Write(row); err != nil {
+		// Escreve o registro no Parquet
+		if err := pw.Write(row.Interface()); err != nil {
 			log.Fatalf("Failed to write record to Parquet: %v", err)
 		}
 	}
 
 	fmt.Printf("Parquet file written successfully: %s\n", parquetFilePath)
+}
+
+func createDynamicStruct(columns []string) interface{} {
+	// Cria campos dinamicamente com tags Parquet
+	fields := []reflect.StructField{}
+	for _, col := range columns {
+		fields = append(fields, reflect.StructField{
+			Name: col,                // Nome do campo (em Go, precisa ser único e começar com letra maiúscula)
+			Type: reflect.TypeOf(""), // Tipo de dado (UTF8 = string)
+			Tag:  reflect.StructTag(fmt.Sprintf(`parquet:"name=%s, type=UTF8"`, col)),
+		})
+	}
+
+	// Cria a estrutura dinâmica
+	structType := reflect.StructOf(fields)
+	return reflect.New(structType).Interface()
 }
