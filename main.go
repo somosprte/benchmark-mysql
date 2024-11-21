@@ -17,8 +17,14 @@ func main() {
 
 	// Configurações
 	mysqlDSN := os.Getenv("MYSQL_DSN")
-	query := os.Getenv("QUERY")
+	queryFile := os.Getenv("QUERY_FILE")
 	parquetFilePath := os.Getenv("PARQUET_FILE_PATH")
+
+	// Carrega a query diretamente do arquivo
+	query, err := internal.LoadQueryFromFile(queryFile)
+	if err != nil {
+		log.Fatalf("Failed to load query: %v", err)
+	}
 
 	if mysqlDSN == "" || query == "" || parquetFilePath == "" {
 		log.Fatalf("Missing required environment variables")
