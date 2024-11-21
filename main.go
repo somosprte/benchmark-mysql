@@ -34,11 +34,7 @@ func main() {
 	log.Println("Running MySQL benchmark and generating Parquet...")
 	internal.BenchmarkMySQL(mysqlDSN, query, parquetFilePath)
 
-	// 2. Consulta no MySQL via DuckDB
-	log.Println("Running DuckDB benchmark with MySQL...")
-	internal.BenchmarkDuckDBWithMySQL(mysqlDSN, query)
-
-	// 3. Consulta no Parquet via DuckDB
+	// 2. Consulta no Parquet via DuckDB
 	log.Println("Running DuckDB benchmark with Parquet...")
 	internal.BenchmarkDuckDBWithParquet(parquetFilePath, "SELECT * FROM read_parquet('%s') WHERE 1=1")
 }

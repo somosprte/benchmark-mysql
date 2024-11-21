@@ -11,11 +11,7 @@ This application benchmarks MySQL query performance using **DuckDB** and **Parqu
    - Executes a query directly on the MySQL database and measures execution time.
    - Generates a Parquet file with the query results.
 
-2. **Query performance in DuckDB using MySQL data**:
-
-   - Uses DuckDB to query MySQL data directly and benchmarks the performance.
-
-3. **Query performance in Parquet files using DuckDB**:
+2. **Query performance in Parquet files using DuckDB**:
    - Reads the Parquet file generated from MySQL data and executes SQL queries on it using DuckDB.
 
 ---
