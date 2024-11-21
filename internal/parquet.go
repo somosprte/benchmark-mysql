@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"strings"
+	"unicode"
 
 	"github.com/xitongsys/parquet-go/source"
 	"github.com/xitongsys/parquet-go/writer"
@@ -112,4 +114,19 @@ func createDynamicStruct(columns []string) interface{} {
 	// Cria a estrutura dinâmica
 	structType := reflect.StructOf(fields)
 	return reflect.New(structType).Interface()
+}
+
+// toExportedFieldName converte nomes de colunas para nomes de campos exportados
+func toExportedFieldName(name string) string {
+	// Remove espaços e caracteres especiais
+	name = strings.TrimSpace(name)
+	name = strings.ReplaceAll(name, " ", "_")
+
+	// Garante que o primeiro caractere seja maiúsculo
+	runes := []rune(name)
+	if len(runes) > 0 && unicode.IsLower(runes[0]) {
+		runes[0] = unicode.ToUpper(runes[0])
+	}
+
+	return string(runes)
 }
