@@ -60,3 +60,9 @@ For MacOS:
 ```bash
 GOOS=darwin GOARCH=amd64 go build -o out/benchmark-mysql main.go
 ```
+
+# Results
+
+Duckdb is five times faster than MySQL for the same query.
+
+Parquet files are a good compression format for data storage and can be used to improve query performance. 116235 rows where stored in a 2.881MB file.
