@@ -1,8 +1,6 @@
 module github.com/somosprte/benchmark-mysql
 
-go 1.23
-
-toolchain go1.23.3
+go 1.25
 
 require (
 	github.com/joho/godotenv v1.5.1
@@ -14,7 +12,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/apache/arrow-go/v18 v18.0.0 // indirect
 	github.com/apache/arrow/go/arrow v0.0.0-20211112161151-bc219186db40 // indirect
-	github.com/apache/thrift v0.21.0 // indirect
+	github.com/apache/thrift v0.23.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
